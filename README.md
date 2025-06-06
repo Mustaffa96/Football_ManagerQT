@@ -1,2 +1,2 @@
-# Fantasy_LeagueQT
-A Fantasy League, but developed using PyQT 
+# Football_ManagerQT
+A Football Manager, but developed using PyQT 
