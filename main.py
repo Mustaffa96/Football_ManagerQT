@@ -8,8 +8,11 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QLabel,
     QStatusBar,
+    QStackedWidget,
 )
 from PyQt5.QtCore import Qt
+from ui.squad_view import SquadView
+from database.models import init_db
 
 
 class FootballManager(QMainWindow):
@@ -17,6 +20,10 @@ class FootballManager(QMainWindow):
         super().__init__()
         self.setWindowTitle("Football Manager QT")
         self.setGeometry(100, 100, 1024, 768)
+
+        # Initialize database
+        init_db()
+
         self.setup_ui()
 
     def setup_ui(self):
@@ -35,7 +42,7 @@ class FootballManager(QMainWindow):
         button_layout = QHBoxLayout()
 
         # Add main menu buttons
-        buttons = [
+        self.buttons = [
             ("Squad", self.show_squad),
             ("Tactics", self.show_tactics),
             ("Match", self.show_match),
@@ -43,7 +50,7 @@ class FootballManager(QMainWindow):
             ("Statistics", self.show_statistics),
         ]
 
-        for text, callback in buttons:
+        for text, callback in self.buttons:
             btn = QPushButton(text)
             btn.clicked.connect(callback)
             btn.setMinimumWidth(120)
@@ -51,24 +58,40 @@ class FootballManager(QMainWindow):
 
         main_layout.addLayout(button_layout)
 
+        # Create stacked widget for different views
+        self.stacked_widget = QStackedWidget()
+        main_layout.addWidget(self.stacked_widget)
+
+        # Add views
+        self.squad_view = SquadView()
+        self.stacked_widget.addWidget(self.squad_view)
+
+        # Add placeholder widgets for other views
+        for _ in range(4):  # Tactics, Match, Transfer, Statistics
+            self.stacked_widget.addWidget(QWidget())
+
         # Add status bar
         self.statusBar().showMessage("Welcome to Football Manager QT!")
 
     def show_squad(self):
-        self.statusBar().showMessage("Squad Management - Coming Soon!")
+        self.stacked_widget.setCurrentIndex(0)
+        self.statusBar().showMessage("Squad Management")
 
     def show_tactics(self):
+        self.stacked_widget.setCurrentIndex(1)
         self.statusBar().showMessage("Team Tactics - Coming Soon!")
 
     def show_match(self):
+        self.stacked_widget.setCurrentIndex(2)
         self.statusBar().showMessage("Match Center - Coming Soon!")
 
     def show_transfer(self):
+        self.stacked_widget.setCurrentIndex(3)
         self.statusBar().showMessage("Transfer Market - Coming Soon!")
 
     def show_statistics(self):
+        self.stacked_widget.setCurrentIndex(4)
         self.statusBar().showMessage("Statistics - Coming Soon!")
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
