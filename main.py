@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -11,8 +12,8 @@ from PyQt5.QtWidgets import (
     QStackedWidget,
 )
 from PyQt5.QtCore import Qt
-from ui.squad_view import SquadView
-from database.models import init_db
+from ui import SquadView
+from database import init_db, create_sample_data
 
 
 class FootballManager(QMainWindow):
@@ -21,8 +22,11 @@ class FootballManager(QMainWindow):
         self.setWindowTitle("Football Manager QT")
         self.setGeometry(100, 100, 1024, 768)
 
-        # Initialize database
-        init_db()
+        # Initialize database and sample data if needed
+        db_file = "football_manager.db"
+        if not os.path.exists(db_file):
+            init_db()
+            create_sample_data()
 
         self.setup_ui()
 
@@ -92,6 +96,7 @@ class FootballManager(QMainWindow):
     def show_statistics(self):
         self.stacked_widget.setCurrentIndex(4)
         self.statusBar().showMessage("Statistics - Coming Soon!")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

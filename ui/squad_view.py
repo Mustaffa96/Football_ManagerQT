@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTableWidget,
                            QTableWidgetItem, QPushButton, QLabel, QComboBox,
-                           QHeaderView)
+                           QHeaderView, QMessageBox)
 from PyQt5.QtCore import Qt
-from database.models import get_session, Player, Team
+from database import get_session, Player, Team
+from .player_dialog import PlayerDialog
 
 class SquadView(QWidget):
     def __init__(self):
@@ -56,6 +57,10 @@ class SquadView(QWidget):
         self.add_player_btn.clicked.connect(self.add_player)
         self.edit_player_btn.clicked.connect(self.edit_player)
         self.remove_player_btn.clicked.connect(self.remove_player)
+        
+        # Enable/disable buttons based on selection
+        self.squad_table.itemSelectionChanged.connect(self.update_button_states)
+        self.update_button_states()
 
     def load_teams(self):
         teams = self.session.query(Team).all()
@@ -79,15 +84,67 @@ class SquadView(QWidget):
             self.squad_table.setItem(row, 5, QTableWidgetItem(str(player.stamina)))
             self.squad_table.setItem(row, 6, QTableWidgetItem(str(player.speed)))
             self.squad_table.setItem(row, 7, QTableWidgetItem(str(player.technique)))
+            
+            # Store player id in the first column for reference
+            self.squad_table.item(row, 0).setData(Qt.UserRole, player.id)
+
+    def update_button_states(self):
+        has_selection = len(self.squad_table.selectedItems()) > 0
+        self.edit_player_btn.setEnabled(has_selection)
+        self.remove_player_btn.setEnabled(has_selection)
+
+    def get_selected_player(self):
+        selected_items = self.squad_table.selectedItems()
+        if not selected_items:
+            return None
+        
+        row = selected_items[0].row()
+        player_id = self.squad_table.item(row, 0).data(Qt.UserRole)
+        return self.session.query(Player).get(player_id)
 
     def add_player(self):
-        # TODO: Implement add player dialog
-        pass
+        team_id = self.team_combo.currentData()
+        if team_id is None:
+            return
+            
+        dialog = PlayerDialog(self)
+        if dialog.exec_():
+            player_data = dialog.get_player_data()
+            player = Player(**player_data)
+            player.team_id = team_id
+            
+            self.session.add(player)
+            self.session.commit()
+            self.load_squad_data()
 
     def edit_player(self):
-        # TODO: Implement edit player dialog
-        pass
+        player = self.get_selected_player()
+        if not player:
+            return
+            
+        dialog = PlayerDialog(self, player)
+        if dialog.exec_():
+            player_data = dialog.get_player_data()
+            for key, value in player_data.items():
+                setattr(player, key, value)
+            
+            self.session.commit()
+            self.load_squad_data()
 
     def remove_player(self):
-        # TODO: Implement player removal with confirmation
-        pass
+        player = self.get_selected_player()
+        if not player:
+            return
+            
+        reply = QMessageBox.question(
+            self,
+            "Confirm Removal",
+            f"Are you sure you want to remove {player.name} from the squad?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            self.session.delete(player)
+            self.session.commit()
+            self.load_squad_data()
