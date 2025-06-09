@@ -18,16 +18,16 @@ class MatchEngine:
     def calculate_team_strength(self, team, tactics) -> float:
         """Calculate overall team strength based on players and tactics"""
         total_strength = 0
-        players = team.players
+        players = team['players']
         
         for player in players:
             # Basic strength calculation
             player_strength = (
-                player.attack + 
-                player.defense + 
-                player.stamina + 
-                player.speed + 
-                player.technique
+                player['attack'] + 
+                player['defense'] + 
+                player['stamina'] + 
+                player['speed'] + 
+                player['technique']
             ) / 5
             total_strength += player_strength
             
@@ -71,25 +71,29 @@ class MatchEngine:
                     self.away_score += 1
                     
                 # Select random scorer from attacking team
-                scorer = random.choice(attacking_team.players)
+                scorer = random.choice(attacking_team['players'])
                 
                 event = {
                     "minute": self.current_minute,
                     "event_type": "goal",
-                    "player_id": scorer.id,
-                    "team_id": attacking_team.id,
+                    "player_id": scorer['id'],
+                    "team_id": attacking_team['id'],
+                    "player_name": scorer['name'],
+                    "team_name": attacking_team['name'],
                     "details": {
                         "score": f"{self.home_score}-{self.away_score}"
                     }
                 }
             else:
                 # Shot saved/missed
-                shooter = random.choice(attacking_team.players)
+                shooter = random.choice(attacking_team['players'])
                 event = {
                     "minute": self.current_minute,
                     "event_type": "shot",
-                    "player_id": shooter.id,
-                    "team_id": attacking_team.id,
+                    "player_id": shooter['id'],
+                    "team_id": attacking_team['id'],
+                    "player_name": shooter['name'],
+                    "team_name": attacking_team['name'],
                     "details": {
                         "outcome": "saved" if shot_quality > defense_quality * 0.5 else "missed"
                     }

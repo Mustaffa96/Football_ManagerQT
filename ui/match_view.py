@@ -22,11 +22,11 @@ class MatchView(QWidget):
         self.away_score_label = QLabel("0")
         self.time_label = QLabel("0'")
         
-        score_layout.addWidget(QLabel(self.home_team.name))
+        score_layout.addWidget(QLabel(self.home_team['name']))
         score_layout.addWidget(self.home_score_label)
         score_layout.addWidget(QLabel("-"))
         score_layout.addWidget(self.away_score_label)
-        score_layout.addWidget(QLabel(self.away_team.name))
+        score_layout.addWidget(QLabel(self.away_team['name']))
         score_layout.addWidget(self.time_label)
         
         layout.addLayout(score_layout)
@@ -90,9 +90,9 @@ class MatchView(QWidget):
         # Add event to list if one occurred
         if event:
             if event["event_type"] == "goal":
-                text = f"{event['minute']}' GOAL! {event['details']['score']}"
+                text = f"{event['minute']}' GOAL! {event['player_name']} ({event['team_name']}) - {event['details']['score']}"
             else:
-                text = f"{event['minute']}' Shot {event['details']['outcome']}"
+                text = f"{event['minute']}' Shot by {event['player_name']} ({event['team_name']}) - {event['details']['outcome']}"
             self.events_list.insertItem(0, text)
         
         # Check if match is over

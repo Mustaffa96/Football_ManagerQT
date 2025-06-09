@@ -143,9 +143,11 @@ class PitchView(QGraphicsView):
         pitch_width = 800
         pitch_height = 500
         margin = 50  # Add margin for better visibility
-        
+
         # Set scene rect with margins
-        self.setSceneRect(-margin, -margin, pitch_width + 2*margin, pitch_height + 2*margin)
+        self.setSceneRect(
+            -margin, -margin, pitch_width + 2 * margin, pitch_height + 2 * margin
+        )
 
         # Draw pitch outline
         self.scene.addRect(

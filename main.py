@@ -10,13 +10,17 @@ from PyQt5.QtWidgets import (
     QLabel,
     QStatusBar,
     QStackedWidget,
+    QComboBox,
+    QDialog,
 )
 from PyQt5.QtCore import Qt
 from ui import SquadView
 from ui.tactics_view import TacticsView
-from database import init_db, create_sample_data
+from ui.match_view import MatchView
+from database import init_db, create_sample_data, get_session
+from database.models import Team, TeamTactics
 from ui.styles import MAIN_STYLE
-
+from sqlalchemy.orm import joinedload
 
 class FootballManager(QMainWindow):
     def __init__(self):
@@ -84,8 +88,47 @@ class FootballManager(QMainWindow):
         self.tactics_view = TacticsView()
         self.stacked_widget.addWidget(self.tactics_view)
 
+        # Add match view
+        self.match_setup_widget = QWidget()
+        match_setup_layout = QVBoxLayout(self.match_setup_widget)
+        
+        # Team selection
+        teams_layout = QHBoxLayout()
+        
+        # Home team selection
+        home_layout = QVBoxLayout()
+        home_label = QLabel("Home Team:")
+        self.home_team_combo = QComboBox()
+        home_layout.addWidget(home_label)
+        home_layout.addWidget(self.home_team_combo)
+        
+        vs_label = QLabel("VS")
+        vs_label.setAlignment(Qt.AlignCenter)
+        
+        # Away team selection
+        away_layout = QVBoxLayout()
+        away_label = QLabel("Away Team:")
+        self.away_team_combo = QComboBox()
+        away_layout.addWidget(away_label)
+        away_layout.addWidget(self.away_team_combo)
+        
+        teams_layout.addLayout(home_layout)
+        teams_layout.addWidget(vs_label)
+        teams_layout.addLayout(away_layout)
+        match_setup_layout.addLayout(teams_layout)
+        
+        # Start match button
+        start_match_btn = QPushButton("Start Match")
+        start_match_btn.clicked.connect(self.start_match)
+        match_setup_layout.addWidget(start_match_btn)
+        
+        self.stacked_widget.addWidget(self.match_setup_widget)
+        
+        # Load teams into combo boxes
+        self.load_teams()
+
         # Add placeholder widgets for other views
-        for _ in range(3):  # Match, Transfer, Statistics
+        for _ in range(2):  # Transfer, Statistics
             placeholder = QWidget()
             placeholder_layout = QVBoxLayout(placeholder)
             label = QLabel("Coming Soon!")
@@ -100,6 +143,97 @@ class FootballManager(QMainWindow):
             "QStatusBar { background-color: #34495e; color: white; padding: 5px; }"
         )
 
+    def load_teams(self):
+        """Load teams into combo boxes"""
+        session = get_session()
+        teams = session.query(Team).all()
+        
+        for team in teams:
+            self.home_team_combo.addItem(team.name, team.id)
+            self.away_team_combo.addItem(team.name, team.id)
+            
+        session.close()
+        
+    def start_match(self):
+        """Start a match between selected teams"""
+        session = get_session()
+        
+        # Get selected teams using newer SQLAlchemy API
+        home_team_id = self.home_team_combo.currentData()
+        away_team_id = self.away_team_combo.currentData()
+        
+        # Eagerly load teams with their players and tactics
+        home_team = (
+            session.query(Team)
+            .filter_by(id=home_team_id)
+            .options(joinedload(Team.players))
+            .first()
+        )
+        away_team = (
+            session.query(Team)
+            .filter_by(id=away_team_id)
+            .options(joinedload(Team.players))
+            .first()
+        )
+        
+        # Get default tactics for each team
+        home_tactics = session.query(TeamTactics).filter_by(team_id=home_team_id).first()
+        away_tactics = session.query(TeamTactics).filter_by(team_id=away_team_id).first()
+        
+        # Create copies of the data to avoid session issues
+        home_team_data = {
+            'id': home_team.id,
+            'name': home_team.name,
+            'players': [{
+                'id': p.id,
+                'name': p.name,
+                'attack': p.attack,
+                'defense': p.defense,
+                'stamina': p.stamina,
+                'speed': p.speed,
+                'technique': p.technique
+            } for p in home_team.players]
+        }
+        
+        away_team_data = {
+            'id': away_team.id,
+            'name': away_team.name,
+            'players': [{
+                'id': p.id,
+                'name': p.name,
+                'attack': p.attack,
+                'defense': p.defense,
+                'stamina': p.stamina,
+                'speed': p.speed,
+                'technique': p.technique
+            } for p in away_team.players]
+        }
+        
+        home_tactics_data = {
+            'formation': home_tactics.formation,
+            'player_positions': home_tactics.player_positions,
+            'player_roles': home_tactics.player_roles
+        } if home_tactics else None
+        
+        away_tactics_data = {
+            'formation': away_tactics.formation,
+            'player_positions': away_tactics.player_positions,
+            'player_roles': away_tactics.player_roles
+        } if away_tactics else None
+        
+        session.close()
+        
+        # Create and show match dialog
+        match_dialog = QDialog(self)
+        match_dialog.setWindowTitle("Match View")
+        match_dialog.setMinimumSize(800, 600)
+        
+        layout = QVBoxLayout(match_dialog)
+        match_view = MatchView(home_team_data, away_team_data, home_tactics_data, away_tactics_data)
+        layout.addWidget(match_view)
+        
+        match_dialog.exec_()
+
     def show_squad(self):
         self.stacked_widget.setCurrentIndex(0)
         self.statusBar().showMessage("Squad Management")
@@ -110,7 +244,7 @@ class FootballManager(QMainWindow):
 
     def show_match(self):
         self.stacked_widget.setCurrentIndex(2)
-        self.statusBar().showMessage("Match Center - Coming Soon!")
+        self.statusBar().showMessage("Match Center")
 
     def show_transfer(self):
         self.stacked_widget.setCurrentIndex(3)

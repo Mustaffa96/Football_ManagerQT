@@ -1,40 +1,41 @@
 from datetime import date, timedelta
 from .models import init_db, get_session, Team, Player, TeamTactics
 
+
 def create_sample_data():
     session = get_session()
-    
+
     # Create teams
     teams_data = [
         {
             "name": "Manchester United",
             "country": "England",
             "league": "Premier League",
-            "budget": 200000000.0
+            "budget": 200000000.0,
         },
         {
             "name": "Real Madrid",
             "country": "Spain",
             "league": "La Liga",
-            "budget": 250000000.0
+            "budget": 250000000.0,
         },
         {
             "name": "Bayern Munich",
             "country": "Germany",
             "league": "Bundesliga",
-            "budget": 180000000.0
-        }
+            "budget": 180000000.0,
+        },
     ]
-    
+
     teams = []
     for team_data in teams_data:
         team = Team(**team_data)
         session.add(team)
         teams.append(team)
-    
+
     # Commit teams first to get their IDs
     session.commit()
-    
+
     # Create players for each team
     players_data = {
         "Manchester United": [
@@ -50,7 +51,7 @@ def create_sample_data():
                 "technique": 82,
                 "wage": 250000.0,
                 "value": 85000000.0,
-                "contract_end": date.today() + timedelta(days=1825)  # 5 years
+                "contract_end": date.today() + timedelta(days=1825),  # 5 years
             },
             {
                 "name": "Bruno Fernandes",
@@ -64,7 +65,7 @@ def create_sample_data():
                 "technique": 88,
                 "wage": 250000.0,
                 "value": 75000000.0,
-                "contract_end": date.today() + timedelta(days=1460)  # 4 years
+                "contract_end": date.today() + timedelta(days=1460),  # 4 years
             },
             {
                 "name": "Rasmus Hojlund",
@@ -78,7 +79,7 @@ def create_sample_data():
                 "technique": 80,
                 "wage": 150000.0,
                 "value": 65000000.0,
-                "contract_end": date.today() + timedelta(days=1825)  # 5 years
+                "contract_end": date.today() + timedelta(days=1825),  # 5 years
             },
             {
                 "name": "Casemiro",
@@ -92,7 +93,7 @@ def create_sample_data():
                 "technique": 85,
                 "wage": 300000.0,
                 "value": 45000000.0,
-                "contract_end": date.today() + timedelta(days=730)  # 2 years
+                "contract_end": date.today() + timedelta(days=730),  # 2 years
             },
             {
                 "name": "Andre Onana",
@@ -106,7 +107,7 @@ def create_sample_data():
                 "technique": 80,
                 "wage": 200000.0,
                 "value": 45000000.0,
-                "contract_end": date.today() + timedelta(days=1825)  # 5 years
+                "contract_end": date.today() + timedelta(days=1825),  # 5 years
             },
             {
                 "name": "Luke Shaw",
@@ -120,7 +121,7 @@ def create_sample_data():
                 "technique": 80,
                 "wage": 200000.0,
                 "value": 40000000.0,
-                "contract_end": date.today() + timedelta(days=730)  # 2 years
+                "contract_end": date.today() + timedelta(days=730),  # 2 years
             },
             {
                 "name": "Raphael Varane",
@@ -134,7 +135,7 @@ def create_sample_data():
                 "technique": 75,
                 "wage": 250000.0,
                 "value": 35000000.0,
-                "contract_end": date.today() + timedelta(days=730)  # 2 years
+                "contract_end": date.today() + timedelta(days=730),  # 2 years
             },
             {
                 "name": "Lisandro Martinez",
@@ -148,7 +149,7 @@ def create_sample_data():
                 "technique": 78,
                 "wage": 180000.0,
                 "value": 50000000.0,
-                "contract_end": date.today() + timedelta(days=1460)  # 4 years
+                "contract_end": date.today() + timedelta(days=1460),  # 4 years
             },
             {
                 "name": "Aaron Wan-Bissaka",
@@ -162,7 +163,7 @@ def create_sample_data():
                 "technique": 75,
                 "wage": 120000.0,
                 "value": 25000000.0,
-                "contract_end": date.today() + timedelta(days=730)  # 2 years
+                "contract_end": date.today() + timedelta(days=730),  # 2 years
             },
             {
                 "name": "Mason Mount",
@@ -176,7 +177,7 @@ def create_sample_data():
                 "technique": 82,
                 "wage": 200000.0,
                 "value": 55000000.0,
-                "contract_end": date.today() + timedelta(days=1825)  # 5 years
+                "contract_end": date.today() + timedelta(days=1825),  # 5 years
             },
             {
                 "name": "Antony",
@@ -190,8 +191,8 @@ def create_sample_data():
                 "technique": 85,
                 "wage": 200000.0,
                 "value": 50000000.0,
-                "contract_end": date.today() + timedelta(days=1825)  # 5 years
-            }
+                "contract_end": date.today() + timedelta(days=1825),  # 5 years
+            },
         ],
         "Real Madrid": [
             {
@@ -206,7 +207,7 @@ def create_sample_data():
                 "technique": 87,
                 "wage": 220000.0,
                 "value": 120000000.0,
-                "contract_end": date.today() + timedelta(days=1825)  # 5 years
+                "contract_end": date.today() + timedelta(days=1825),  # 5 years
             },
             {
                 "name": "Toni Kroos",
@@ -220,8 +221,8 @@ def create_sample_data():
                 "technique": 90,
                 "wage": 200000.0,
                 "value": 25000000.0,
-                "contract_end": date.today() + timedelta(days=365)  # 1 year
-            }
+                "contract_end": date.today() + timedelta(days=365),  # 1 year
+            },
         ],
         "Bayern Munich": [
             {
@@ -236,7 +237,7 @@ def create_sample_data():
                 "technique": 85,
                 "wage": 250000.0,
                 "value": 90000000.0,
-                "contract_end": date.today() + timedelta(days=1460)  # 4 years
+                "contract_end": date.today() + timedelta(days=1460),  # 4 years
             },
             {
                 "name": "Joshua Kimmich",
@@ -250,19 +251,19 @@ def create_sample_data():
                 "technique": 86,
                 "wage": 180000.0,
                 "value": 70000000.0,
-                "contract_end": date.today() + timedelta(days=1095)  # 3 years
-            }
-        ]
+                "contract_end": date.today() + timedelta(days=1095),  # 3 years
+            },
+        ],
     }
-    
+
     for team in teams:
         for player_data in players_data[team.name]:
             player = Player(**player_data)
             player.team = team
             session.add(player)
-    
+
     session.commit()
-    
+
     # Create tactics for Manchester United
     man_utd = session.query(Team).filter_by(name="Manchester United").first()
     if man_utd:
@@ -284,9 +285,9 @@ def create_sample_data():
                 str(man_utd.players[1].id): "Attacking Midfielder",  # Bruno
                 str(man_utd.players[0].id): "Inside Forward",  # Rashford
                 str(man_utd.players[2].id): "Advanced Forward",  # Hojlund
-            }
+            },
         )
-        
+
         # 4-3-3 Formation (Attacking)
         tactics_433 = TeamTactics(
             team=man_utd,
@@ -304,9 +305,9 @@ def create_sample_data():
                 str(man_utd.players[1].id): "Box-to-Box",  # Bruno
                 str(man_utd.players[0].id): "Inside Forward",  # Rashford
                 str(man_utd.players[2].id): "Complete Forward",  # Hojlund
-            }
+            },
         )
-        
+
         # 4-4-2 Diamond (Alternative)
         tactics_442_diamond = TeamTactics(
             team=man_utd,
@@ -324,13 +325,14 @@ def create_sample_data():
                 str(man_utd.players[1].id): "Attacking Midfielder",  # Bruno
                 str(man_utd.players[0].id): "Inside Forward",  # Rashford
                 str(man_utd.players[2].id): "Advanced Forward",  # Hojlund
-            }
+            },
         )
-        
+
         session.add_all([tactics_4231, tactics_433, tactics_442_diamond])
-    
+
     session.commit()
     session.close()
+
 
 if __name__ == "__main__":
     # Initialize database
