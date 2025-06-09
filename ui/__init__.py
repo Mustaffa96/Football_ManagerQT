@@ -1,4 +1,4 @@
 from .squad_view import SquadView
-from .player_dialog import PlayerDialog
+from .tactics_view import TacticsView
 
-__all__ = ['SquadView', 'PlayerDialog']
+__all__ = ['SquadView', 'TacticsView']
