@@ -17,6 +17,7 @@ from PyQt5.QtCore import Qt
 from ui import SquadView
 from ui.tactics_view import TacticsView
 from ui.match_view import MatchView
+from ui.team_view import TeamView
 from database import init_db, create_sample_data, get_session
 from database.models import Team, TeamTactics
 from ui.styles import MAIN_STYLE
@@ -60,6 +61,7 @@ class FootballManager(QMainWindow):
 
         # Add main menu buttons
         self.buttons = [
+            ("Teams", self.show_teams, "Manage teams"),
             ("Squad", self.show_squad, "Manage your team's squad"),
             ("Tactics", self.show_tactics, "Set up team tactics and formation"),
             ("Match", self.show_match, "Play matches and view results"),
@@ -81,6 +83,9 @@ class FootballManager(QMainWindow):
         main_layout.addWidget(self.stacked_widget)
 
         # Add views
+        self.team_view = TeamView()
+        self.stacked_widget.addWidget(self.team_view)
+        
         self.squad_view = SquadView()
         self.stacked_widget.addWidget(self.squad_view)
 
@@ -234,24 +239,28 @@ class FootballManager(QMainWindow):
         
         match_dialog.exec_()
 
-    def show_squad(self):
+    def show_teams(self):
         self.stacked_widget.setCurrentIndex(0)
+        self.statusBar().showMessage("Team Management")
+
+    def show_squad(self):
+        self.stacked_widget.setCurrentIndex(1)
         self.statusBar().showMessage("Squad Management")
 
     def show_tactics(self):
-        self.stacked_widget.setCurrentIndex(1)
+        self.stacked_widget.setCurrentIndex(2)
         self.statusBar().showMessage("Team Tactics")
 
     def show_match(self):
-        self.stacked_widget.setCurrentIndex(2)
+        self.stacked_widget.setCurrentIndex(3)
         self.statusBar().showMessage("Match Center")
 
     def show_transfer(self):
-        self.stacked_widget.setCurrentIndex(3)
+        self.stacked_widget.setCurrentIndex(4)
         self.statusBar().showMessage("Transfer Market - Coming Soon!")
 
     def show_statistics(self):
-        self.stacked_widget.setCurrentIndex(4)
+        self.stacked_widget.setCurrentIndex(5)
         self.statusBar().showMessage("Statistics - Coming Soon!")
 
 
